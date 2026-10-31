@@ -1,5 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from app.api.controllers.query_controller import answer_controller
+from app.api.dependencies import get_graph
 from pydantic import BaseModel
 
 query_router = APIRouter()
@@ -11,11 +12,5 @@ class QuestionRequest(BaseModel):
 
 
 @query_router.post('/')
-async def query_route(data:QuestionRequest):
-    answer = await answer_controller(data.question,data.user_id,data.conv_id)
-    
-    return {
-        'answer':answer,
-        'success':True,
-        'status':200
-    }
+async def query_route(data:QuestionRequest, chatbot=Depends(get_graph)):
+    return await answer_controller(data.question,data.user_id,data.conv_id,chatbot)

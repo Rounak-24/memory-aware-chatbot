@@ -1,8 +1,6 @@
 from langgraph.graph import StateGraph, START
 from langgraph.prebuilt import tools_condition
 from app.chatbot.workflow.state import ChatState
-from app.services.redis import setup_redis_store
-import asyncio
 from app.chatbot.workflow.nodes import (
     remember_node,
     chat_node,
@@ -24,15 +22,10 @@ graph_builder.add_conditional_edges('chat_node', tools_condition)
 graph_builder.add_edge('tools','chat_node')
 
 
-async def compile_graph():
+async def compile_graph(store, checkpointer):
     try:
-        (store, checkpointer,) = await setup_redis_store()
-
         return graph_builder.compile(store=store, checkpointer=checkpointer)
     
     except Exception as e:
         print('Something went wrong in compile_graph fn')
         raise e
-
-
-chatbot = asyncio.run(compile_graph())
