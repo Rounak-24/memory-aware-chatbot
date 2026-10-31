@@ -1,0 +1,15 @@
+name: 'chatbot_backend'
+
+services:
+  redis-store: 
+    container_name: 'redis_store'
+    image: redis/redis-stack:latest
+
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+
+
+volumes:
+  redis_data:
